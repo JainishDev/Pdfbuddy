@@ -1,24 +1,28 @@
 # PDF Buddy - AI-Powered PDF Chat Assistant
 
 ## Tools and Automation Process Internship
-@Unicode Technolab
+**@Unicode Technolab**
 
 ---
 
-## �‍🎓 Student Information
+## 👨‍🎓 Student Information
+
 - **Name:** Patel Jainish M.
 - **Enrollment No:** 240163116022
-- **Semester:** 7th Sem
-- **College:** Government Engineering College Modasa
+- **Semester:** 7th Semester
+- **College:** Government Engineering College, Modasa
 
 ---
 
 ## 📖 About This Repository
 
-**PDF Buddy** is an AI-powered PDF chat assistant that allows users to upload PDF documents and ask questions about their content using natural language. The application leverages Google's Gemini AI models for both document embedding and intelligent question answering.
+**PDF Buddy** is an AI-powered PDF chat assistant that allows users to upload PDF documents and ask questions about their content using natural language. The application leverages Google's Gemini AI models for document embedding and intelligent question answering.
 
-**Live Link:**pdfbuddyai.netlify.app
+### 🌐 Live Demo
 
+**🔗 Live Application:** https://pdfbuddyai.netlify.app
+
+---
 ### 🎯 Project Overview
 
 This project was developed as part of the **Tools and Automation Process Internship** at **Unicode Technolab**. It demonstrates modern web development practices with:
@@ -198,4 +202,6 @@ This project is developed for educational purposes as part of the Tools and Auto
 ---
 
 **Developed with ❤️ by Patel Jainish M.**  
-Government Engineering College Modasa | Semester 7 | 2024-2025
+Government Engineering College Modasa | Semester 7 | 
+
+
