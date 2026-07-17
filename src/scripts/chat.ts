@@ -20,10 +20,12 @@ interface TranscriptEntry {
 let transcript: TranscriptEntry[] = [];
 let activeDocInfo: any = null;
 let lastFailedQuestion: string | null = null;
+let userScrolledUp = false;
 
 export function switchToChat(docInfo: any) {
   activeDocInfo = docInfo;
   transcript = [];
+  userScrolledUp = false; // Reset scroll state for new chat
   uploadScreen().classList.add('hidden');
   const screen = chatScreen();
   screen.classList.remove('hidden');
@@ -159,110 +161,39 @@ function initScrollToBottom() {
 
   win.addEventListener('scroll', () => {
     const distanceFromBottom = win.scrollHeight - win.scrollTop - win.clientHeight;
-    btn.classList.toggle('hidden', distanceFromBottom < 120);
+    const atBottom = distanceFromBottom < 50; // threshold for "at bottom"
+    
+    // Track if user has manually scrolled up
+    userScrolledUp = !atBottom;
+    
+    // Show scroll-to-bottom button when user scrolls up
+    btn.classList.toggle('hidden', atBottom);
   });
 
-  btn.addEventListener('click', () => scrollChatToBottom());
+  btn.addEventListener('click', () => {
+    userScrolledUp = false;
+    scrollChatToBottom();
+  });
 }
 
-/* ---------------- message rendering ---------------- */
-
-function addUserMessage(text: string) {
-  transcript.push({ role: 'user', text });
-  const div = document.createElement('div');
-  div.className = 'msg user';
-
-  const body = document.createElement('span');
-  body.textContent = text;
-  div.appendChild(body);
-  div.appendChild(makeTimestamp());
-
-  chatWindow().appendChild(div);
-  scrollChatToBottom();
-}
-
-function addAssistantMessage(text: string, source?: string, showRetry = false) {
-  transcript.push({ role: 'assistant', text, source });
-  const div = document.createElement('div');
-  div.className = 'msg assistant' + (source === 'fallback' || source === 'rule' ? ' fallback' : '');
-
-  const header = document.createElement('div');
-  header.className = 'msg-header';
-
-  const tag = document.createElement('span');
-  tag.className = 'msg-tag';
-  tag.textContent = source === 'fallback' || source === 'rule' ? 'Found in your PDF' : 'PDF Buddy';
-  header.appendChild(tag);
-
-  const actions = document.createElement('span');
-  actions.className = 'msg-actions';
-
-  const copyBtn = document.createElement('button');
-  copyBtn.type = 'button';
-  copyBtn.className = 'msg-copy-btn';
-  copyBtn.title = 'Copy answer';
-  copyBtn.textContent = '⧉';
-  copyBtn.addEventListener('click', () => copyToClipboard(text, copyBtn));
-  actions.appendChild(copyBtn);
-
-  if (showRetry) {
-    const retryBtn = document.createElement('button');
-    retryBtn.type = 'button';
-    retryBtn.className = 'msg-copy-btn msg-retry-btn';
-    retryBtn.title = 'Retry this question';
-    retryBtn.textContent = '↻ Retry';
-    retryBtn.addEventListener('click', () => retryLastQuestion());
-    actions.appendChild(retryBtn);
-  }
-
-  header.appendChild(actions);
-
-  div.appendChild(header);
-
-  const body = document.createElement('span');
-  body.textContent = text;
-  div.appendChild(body);
-  div.appendChild(makeTimestamp());
-
-  chatWindow().appendChild(div);
-  scrollChatToBottom();
-}
-
-function addTypingIndicator() {
-  const div = document.createElement('div');
-  div.className = 'typing-msg';
-  div.innerHTML = '<span></span><span></span><span></span>';
-  chatWindow().appendChild(div);
-  scrollChatToBottom();
-  return div;
-}
-
-function makeTimestamp(): HTMLElement {
-  const el = document.createElement('time');
-  el.className = 'msg-time';
-  const now = new Date();
-  el.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  return el;
-}
-
-async function copyToClipboard(text: string, btn: HTMLButtonElement) {
-  try {
-    await navigator.clipboard.writeText(text);
-    const original = btn.textContent;
-    btn.textContent = '✓';
-    btn.classList.add('copied');
-    setTimeout(() => {
-      btn.textContent = original;
-      btn.classList.remove('copied');
-    }, 1200);
-  } catch {
-    // Clipboard API unavailable — fail silently, it's a non-critical affordance.
-  }
+function shouldAutoScroll(): boolean {
+  // Don't auto-scroll if user has manually scrolled up
+  if (userScrolledUp) return false;
+  
+  const win = chatWindow();
+  const distanceFromBottom = win.scrollHeight - win.scrollTop - win.clientHeight;
+  return distanceFromBottom < 100; // auto-scroll if within 100px of bottom
 }
 
 function scrollChatToBottom() {
   const win = chatWindow();
   win.scrollTo({ top: win.scrollHeight, behavior: 'smooth' });
+}
+
+function autoScrollIfNeeded() {
+  if (shouldAutoScroll()) {
+    scrollChatToBottom();
+  }
 }
 
 function exportTranscript() {
