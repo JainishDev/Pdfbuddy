@@ -9,6 +9,16 @@ interface ClientChunk {
   embedding: number[] | null;
 }
 
+// Helper to add timeout to promises
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 // Stateless: the client sends the chunks it got back from /api/upload along
 // with every question, so no server-side database is needed at all. This
 // keeps the app deployable as-is on Netlify's serverless functions, which
@@ -36,7 +46,7 @@ export const POST: APIRoute = async ({ request }) => {
 
     // --- Primary path: Gemini + embedding-based retrieval ---
     if (hasGeminiKey()) {
-      const questionEmbedding = await embedText(question);
+      const questionEmbedding = await withTimeout(embedText(question), 8000, 'Question embedding');
 
       if (questionEmbedding) {
         const embedded = chunkRows.filter((c) => c.embedding);
@@ -61,7 +71,7 @@ export const POST: APIRoute = async ({ request }) => {
           : chunkRows.slice(0, 3).map((c) => c.content);
       }
 
-      const geminiAnswer = await askGemini(question, selectedChunks);
+      const geminiAnswer = await withTimeout(askGemini(question, selectedChunks), 15000, 'Gemini chat');
       if (geminiAnswer) {
         answerText = geminiAnswer.text;
         source = 'gemini';
@@ -79,6 +89,10 @@ export const POST: APIRoute = async ({ request }) => {
     return json({ answer: answerText, source });
   } catch (err: any) {
     console.error('Chat error', err);
+    // Provide more specific error messages for timeouts
+    if (err?.message?.includes('timed out')) {
+      return json({ error: 'Request timed out. Please try a simpler question or try again.' }, 504);
+    }
     return json({ error: 'Failed to answer question', detail: String(err?.message || err) }, 500);
   }
 };

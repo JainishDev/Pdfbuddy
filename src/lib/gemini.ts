@@ -4,6 +4,17 @@ const CHAT_MODEL = 'gemini-flash-lite-latest';
 
 const BASE_URL = 'https://generativelanguage.googleapis.com/v1beta';
 
+// Helper to add timeout to fetch requests
+async function fetchWithTimeout(url: string, options: RequestInit, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
 export function hasGeminiKey(): boolean {
   return Boolean(GEMINI_API_KEY);
 }
@@ -11,7 +22,7 @@ export function hasGeminiKey(): boolean {
 export async function embedText(text: string): Promise<number[] | null> {
   if (!GEMINI_API_KEY) return null;
   try {
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `${BASE_URL}/models/${EMBED_MODEL}:embedContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
@@ -20,7 +31,8 @@ export async function embedText(text: string): Promise<number[] | null> {
           model: `models/${EMBED_MODEL}`,
           content: { parts: [{ text }] },
         }),
-      }
+      },
+      10000 // 10 second timeout for embeddings
     );
     if (!res.ok) {
       console.error('Gemini embed error', res.status, await res.text());
@@ -75,7 +87,7 @@ Question: ${question}
 Answer clearly and concisely, citing excerpt numbers like [Excerpt 1] where relevant.`;
 
   try {
-    const res = await fetch(
+    const res = await fetchWithTimeout(
       `${BASE_URL}/models/${CHAT_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
       {
         method: 'POST',
@@ -87,7 +99,8 @@ Answer clearly and concisely, citing excerpt numbers like [Excerpt 1] where rele
             maxOutputTokens: 1024,
           },
         }),
-      }
+      },
+      20000 // 20 second timeout for chat
     );
 
     if (!res.ok) {

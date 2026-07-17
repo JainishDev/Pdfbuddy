@@ -6,6 +6,16 @@ import { analyzeDocument } from '../../lib/analysis';
 
 export const prerender = false;
 
+// Helper to add timeout to promises
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms)
+    ),
+  ]);
+}
+
 // Stateless by design: Netlify functions have no shared/persistent
 // filesystem across invocations, so there's nothing durable to write to
 // here. Instead we parse + chunk + (optionally) embed the PDF once, then
@@ -32,7 +42,8 @@ export const POST: APIRoute = async ({ request }) => {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const parsed = await parsePdf(buffer);
+    // Add timeout for PDF parsing (15 seconds max)
+    const parsed = await withTimeout(parsePdf(buffer), 15000, 'PDF parsing');
     if (!parsed.text || parsed.text.trim().length < 10) {
       return json({ error: 'I could not read text from this PDF. It may be a scanned file, so convert it to a searchable PDF first and try again.' }, 422);
     }
@@ -48,7 +59,8 @@ export const POST: APIRoute = async ({ request }) => {
     // Store optional semantic vectors when configured; local rules still work without them.
     let embeddings: (number[] | null)[] = new Array(chunks.length).fill(null);
     if (hasGeminiKey()) {
-      embeddings = await embedBatch(chunks);
+      // Add timeout for embedding (10 seconds max)
+      embeddings = await withTimeout(embedBatch(chunks), 10000, 'Embedding generation');
     }
 
     const chunkPayload = chunks.map((content, i) => ({
@@ -68,6 +80,10 @@ export const POST: APIRoute = async ({ request }) => {
     });
   } catch (err: any) {
     console.error('Upload error', err);
+    // Provide more specific error messages for timeouts
+    if (err?.message?.includes('timed out')) {
+      return json({ error: 'PDF processing timed out. Try a smaller PDF or one with fewer pages.' }, 504);
+    }
     return json({ error: 'Failed to process PDF', detail: String(err?.message || err) }, 500);
   }
 };

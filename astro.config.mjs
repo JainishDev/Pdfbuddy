@@ -7,5 +7,7 @@ export default defineConfig({
   output: 'server',
   adapter: netlify({
     edgeMiddleware: false,
+    // Increase function timeout for PDF processing
+    functionTimeout: 26,
   }),
 });

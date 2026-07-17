@@ -4,9 +4,14 @@
 
 [functions]
   node_bundler = "esbuild"
+  # Increase timeout for PDF processing (max 26s on Netlify Pro, 10s on free)
+  # For large PDFs, pdf-parse can take longer than 10s
+  included_files = ["src/**/*"]
 
 [build.environment]
   NODE_VERSION = "22"
+  # Increase function timeout to maximum (26 seconds on Pro plans)
+  NETLIFY_FUNCTIONS_TIMEOUT = "26"
 
 # --- Security & performance headers ---
 [[headers]]
