@@ -20,8 +20,8 @@
 
 ### 🌐 Live Demo
 
-**🔗 Live Application:** https://pdfbuddyai.netlify.app (Netlify - legacy)
-**🔗 Vercel Deployment:** [Add your Vercel URL after deployment]
+**🔗 Live Application:** https://yourpdfbuddyai.vercel.app 
+
 
 ---
 ### 🎯 Project Overview
