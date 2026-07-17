@@ -4,11 +4,6 @@
   "installCommand": "npm install",
   "framework": "astro",
   "regions": ["iad1"],
-  "functions": {
-    "_render.func": {
-      "maxDuration": 60
-    }
-  },
   "headers": [
     {
       "source": "/api/(.*)",
