@@ -22,6 +22,10 @@
 
 **🔗 Live Application:** https://yourpdfbuddyai.vercel.app 
 
+### 🎥 Video Tutorial
+
+**🎬 Watch Tutorial:** https://www.youtube.com/watch?v=Dp43R9nThtU
+
 
 ---
 ### 🎯 Project Overview
