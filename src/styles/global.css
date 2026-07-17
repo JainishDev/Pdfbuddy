@@ -361,79 +361,27 @@ button {
   inset: 0;
   z-index: 9997;
   pointer-events: none;
-  overflow: hidden;
-  animation: themeVeil 0.92s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.theme-transition::before {
-  content: '';
-  position: absolute;
-  inset: -30%;
-  background:
-    radial-gradient(circle at 78% 12%, var(--theme-wash-a), transparent 0 18%, transparent 19%),
-    conic-gradient(from 210deg, var(--theme-wash-a), var(--theme-wash-b), var(--theme-wash-c), var(--theme-wash-a));
-  filter: blur(18px);
-  opacity: 0.7;
-  animation: themeSpin 0.92s ease-out forwards;
-}
-
-.theme-transition-core,
-.theme-transition-ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  border-radius: 50%;
-  translate: -50% -50%;
-}
-
-.theme-transition-core {
-  width: 18vmax;
-  height: 18vmax;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.76), var(--theme-wash-a) 36%, transparent 70%);
-  animation: themeCore 0.92s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-.theme-transition-ring {
-  width: 24vmax;
-  height: 24vmax;
-  border: 2px solid color-mix(in srgb, var(--theme-wash-b) 70%, transparent);
-  box-shadow: 0 0 80px color-mix(in srgb, var(--theme-wash-c) 38%, transparent);
-  animation: themeRing 0.92s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  background: var(--theme-wash);
+  opacity: 0;
+  animation: themeFade 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .theme-transition.to-light {
-  --theme-wash-a: rgba(255, 199, 92, 0.8);
-  --theme-wash-b: rgba(120, 214, 214, 0.72);
-  --theme-wash-c: rgba(167, 122, 255, 0.72);
+  --theme-wash: radial-gradient(ellipse at 70% 30%, rgba(255, 199, 92, 0.35), transparent 60%),
+                radial-gradient(ellipse at 30% 70%, rgba(120, 214, 214, 0.25), transparent 60%),
+                radial-gradient(ellipse at 50% 50%, rgba(167, 122, 255, 0.2), transparent 70%);
 }
 
 .theme-transition.to-dark {
-  --theme-wash-a: rgba(65, 55, 160, 0.86);
-  --theme-wash-b: rgba(18, 26, 67, 0.86);
-  --theme-wash-c: rgba(255, 109, 168, 0.46);
+  --theme-wash: radial-gradient(ellipse at 70% 30%, rgba(65, 55, 160, 0.4), transparent 60%),
+                radial-gradient(ellipse at 30% 70%, rgba(18, 26, 67, 0.4), transparent 60%),
+                radial-gradient(ellipse at 50% 50%, rgba(255, 109, 168, 0.25), transparent 70%);
 }
 
-@keyframes themeVeil {
+@keyframes themeFade {
   0% { opacity: 0; }
-  22% { opacity: 1; }
+  30% { opacity: 1; }
   100% { opacity: 0; }
-}
-
-@keyframes themeSpin {
-  from { transform: rotate(0deg) scale(0.8); }
-  to { transform: rotate(80deg) scale(1.25); }
-}
-
-@keyframes themeCore {
-  0% { transform: scale(0.2); opacity: 0; }
-  36% { opacity: 0.9; }
-  100% { transform: scale(7); opacity: 0; }
-}
-
-@keyframes themeRing {
-  0% { transform: scale(0.2) rotate(-18deg); opacity: 0; }
-  36% { opacity: 1; }
-  100% { transform: scale(5.5) rotate(18deg); opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

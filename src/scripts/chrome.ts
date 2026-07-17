@@ -96,14 +96,6 @@ function playThemeTransition(nextTheme: string) {
   const transition = document.createElement('div');
   transition.className = `theme-transition ${nextTheme === 'light' ? 'to-light' : 'to-dark'}`;
 
-  const core = document.createElement('div');
-  core.className = 'theme-transition-core';
-  transition.appendChild(core);
-
-  const ring = document.createElement('div');
-  ring.className = 'theme-transition-ring';
-  transition.appendChild(ring);
-
   document.body.appendChild(transition);
   transition.addEventListener('animationend', () => transition.remove(), { once: true });
 }
