@@ -128,6 +128,15 @@ body {
 .boot-screen {
   min-height: 100vh;
   min-height: 100dvh;
+  /* Capping height (not just min-height) stops this element from
+     growing taller than the viewport as chat messages pile up. Without
+     this, the whole page becomes the scroll container and the
+     "overflow-y: auto" on .chat-window below never actually gets used —
+     which is why the chat wasn't auto-scrolling/containing like a normal
+     chat app (e.g. WhatsApp) on mobile. */
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
 }
 
 /* Safe-area insets so content clears the notch / home-indicator / rounded
