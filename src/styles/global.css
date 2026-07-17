@@ -28,6 +28,30 @@
   --glow-pink: 0 12px 34px rgba(255, 109, 168, 0.26);
   --card-shadow: 0 22px 70px rgba(0, 0, 0, 0.46), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
   --radius: 18px;
+
+  /* Smooth theme transition for all CSS custom properties */
+  transition: 
+    --ink 0.4s ease,
+    --bg-deep 0.4s ease,
+    --bg-mid 0.4s ease,
+    --panel 0.4s ease,
+    --panel-solid 0.4s ease,
+    --panel-soft 0.4s ease,
+    --border 0.4s ease,
+    --pink 0.4s ease,
+    --mint 0.4s ease,
+    --yellow 0.4s ease,
+    --sky 0.4s ease,
+    --purple 0.4s ease,
+    --white 0.4s ease,
+    --muted 0.4s ease,
+    --button-text 0.4s ease,
+    --glow-purple 0.4s ease,
+    --glow-mint 0.4s ease,
+    --glow-pink 0.4s ease,
+    --card-shadow 0.4s ease,
+    background-color 0.4s ease,
+    color 0.4s ease;
 }
 
 * {
@@ -44,7 +68,6 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 16px;
   overflow-x: hidden;
-  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 /* ---- light theme override ----
@@ -363,7 +386,7 @@ button {
   pointer-events: none;
   background: var(--theme-wash);
   opacity: 0;
-  animation: themeFade 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+  animation: themeFade 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
 
 .theme-transition.to-light {
@@ -380,7 +403,7 @@ button {
 
 @keyframes themeFade {
   0% { opacity: 0; }
-  30% { opacity: 1; }
+  40% { opacity: 1; }
   100% { opacity: 0; }
 }
 

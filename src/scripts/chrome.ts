@@ -76,19 +76,23 @@ function initTheme() {
 
   toggle.addEventListener('click', () => {
     const next = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-    playThemeTransition(next);
-    root.setAttribute('data-theme', next);
-    toggle.setAttribute('aria-pressed', String(next === 'light'));
-    try {
-      localStorage.setItem(THEME_STORAGE_KEY, next);
-    } catch {
-      // localStorage may be unavailable (private browsing, etc) — non-critical.
-    }
+    playThemeTransition(next, () => {
+      root.setAttribute('data-theme', next);
+      toggle.setAttribute('aria-pressed', String(next === 'light'));
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, next);
+      } catch {
+        // localStorage may be unavailable (private browsing, etc) — non-critical.
+      }
+    });
   });
 }
 
-function playThemeTransition(nextTheme: string) {
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+function playThemeTransition(nextTheme: string, onPeak: () => void) {
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    onPeak();
+    return;
+  }
 
   const oldTransition = document.querySelector('.theme-transition');
   oldTransition?.remove();
@@ -97,6 +101,10 @@ function playThemeTransition(nextTheme: string) {
   transition.className = `theme-transition ${nextTheme === 'light' ? 'to-light' : 'to-dark'}`;
 
   document.body.appendChild(transition);
+
+  // Fire the theme switch at the animation peak (40% = 120ms)
+  setTimeout(onPeak, 120);
+
   transition.addEventListener('animationend', () => transition.remove(), { once: true });
 }
 
