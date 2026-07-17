@@ -1,3 +1,6 @@
+// Polyfill canvas APIs for pdfjs-dist (DOMMatrix, ImageData, Path2D)
+import 'canvas';
+
 import { PDFParse } from 'pdf-parse';
 
 export interface ParsedPdf {
