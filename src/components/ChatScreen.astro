@@ -1,0 +1,307 @@
+---
+// src/components/ChatScreen.astro
+// The "document loaded" screen: scrolling message list + send form.
+// Behavior (sending questions, rendering replies) lives in src/scripts/chat.ts
+---
+
+<section id="chat-screen" class="chat-screen hidden">
+  <div class="chat-panel">
+    <div class="chat-panel-glow"></div>
+    <div class="chat-toolbar">
+      <div>
+        <div class="toolbar-kicker">Active document</div>
+        <div id="chat-doc-title" class="toolbar-title pixel-font">No document loaded</div>
+      </div>
+      <div class="doc-metrics" aria-label="Document metrics">
+        <span id="metric-pages">0 pages</span>
+        <span id="metric-words">0 words</span>
+        <span id="metric-readtime">0 min read</span>
+        <span id="metric-quality">Text looks good</span>
+      </div>
+      <div class="toolbar-actions">
+        <button id="export-chat-btn" class="toolbar-btn" type="button" title="Download conversation">Export</button>
+        <button id="clear-chat-btn" class="toolbar-btn" type="button" title="Clear conversation">Clear</button>
+      </div>
+    </div>
+    <div class="prompt-rail" aria-label="Suggested questions">
+      <button type="button" data-question="Summarize this PDF in five bullets.">Summarize</button>
+      <button type="button" data-question="What are the key decisions or action items?">Actions</button>
+      <button type="button" data-question="Find important numbers, dates, and names.">Extract details</button>
+      <button type="button" data-question="Explain the most complex part in simple words.">Explain simply</button>
+      <button type="button" data-question="Create a study guide from this document.">Study guide</button>
+    </div>
+    <div class="detail-console">
+      <div>
+        <span class="detail-label">Common topics</span>
+        <div id="detail-keyterms" class="detail-value">Waiting for document</div>
+      </div>
+      <div>
+        <span class="detail-label">Useful details</span>
+        <div id="detail-entities" class="detail-value">Dates, numbers, and links will show up here</div>
+      </div>
+    </div>
+    <div id="chat-window" class="chat-window"></div>
+    <button id="scroll-bottom-btn" class="scroll-bottom-btn hidden" type="button" title="Jump to latest">↓</button>
+
+    <form id="chat-form" class="chat-form">
+      <input
+        id="chat-input"
+        type="text"
+        class="chat-input"
+        placeholder="Ask something about the PDF…"
+        autocomplete="off"
+      />
+      <span id="input-count" class="input-count">0</span>
+      <button type="submit" class="btn-send pixel-font">Send</button>
+    </form>
+  </div>
+</section>
+
+<style>
+  .chat-screen {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 920px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    animation: appIn 0.4s ease-out;
+  }
+
+  .chat-panel {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 28%),
+      var(--panel);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--card-shadow);
+    padding: 20px;
+    overflow: hidden;
+  }
+  :global(html[data-theme='light']) .chat-panel {
+    background:
+      linear-gradient(180deg, rgba(255, 205, 121, 0.22), transparent 30%),
+      linear-gradient(145deg, rgba(255, 247, 234, 0.94), rgba(230, 225, 255, 0.95) 52%, rgba(216, 242, 241, 0.92));
+    border-color: rgba(55, 59, 125, 0.3);
+  }
+  .chat-panel-glow {
+    position: absolute;
+    top: -80px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 82%;
+    height: 150px;
+    background: radial-gradient(ellipse, rgba(120, 183, 255, 0.18), transparent 70%);
+    pointer-events: none;
+  }
+  :global(html[data-theme='light']) .chat-panel-glow {
+    background: radial-gradient(ellipse, rgba(255, 186, 97, 0.22), transparent 70%);
+  }
+
+  .chat-toolbar {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(180px, 1fr) auto auto;
+    gap: 14px;
+    align-items: center;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 14px;
+    margin-bottom: 12px;
+  }
+  .toolbar-kicker {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .toolbar-title {
+    color: var(--white);
+    font-size: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .doc-metrics {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+  .doc-metrics span,
+  .toolbar-btn,
+  .prompt-rail button {
+    border: 1px solid var(--border);
+    background: var(--panel-soft);
+    color: var(--muted);
+    border-radius: 999px;
+    font-size: 12px;
+  }
+  :global(html[data-theme='light']) .doc-metrics span,
+  :global(html[data-theme='light']) .toolbar-btn,
+  :global(html[data-theme='light']) .prompt-rail button {
+    background: rgba(255, 247, 234, 0.82);
+    border-color: rgba(55, 59, 125, 0.24);
+    color: #26324f;
+  }
+  .doc-metrics span { padding: 7px 10px; }
+  .toolbar-btn {
+    padding: 8px 12px;
+    transition: color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .toolbar-actions { display: flex; gap: 8px; }
+  .toolbar-btn:hover { color: var(--white); border-color: var(--sky); transform: translateY(-1px); }
+  .prompt-rail {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 0 0 12px;
+    margin-bottom: 8px;
+  }
+  .detail-console {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 0 0 12px;
+  }
+  .detail-console > div {
+    border: 1px solid var(--border);
+    background: var(--panel-soft);
+    border-radius: 14px;
+    padding: 10px 12px;
+    min-width: 0;
+  }
+  .detail-label {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+  .detail-value {
+    color: var(--white);
+    font-size: 12px;
+    line-height: 1.45;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  :global(html[data-theme='light']) .detail-console > div {
+    background: rgba(255, 247, 234, 0.82);
+    border-color: rgba(55, 59, 125, 0.24);
+  }
+  .prompt-rail button {
+    flex: 0 0 auto;
+    padding: 8px 12px;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+  }
+  .prompt-rail button:hover {
+    color: var(--white);
+    border-color: var(--mint);
+    background: color-mix(in srgb, var(--mint) 14%, transparent);
+    transform: translateY(-1px);
+  }
+
+  .chat-window {
+    position: relative;
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 8px 4px 20px;
+    scroll-behavior: smooth;
+  }
+
+  .scroll-bottom-btn {
+    position: absolute;
+    right: 28px;
+    bottom: 88px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--purple), var(--sky));
+    color: var(--white);
+    font-size: 16px;
+    line-height: 1;
+    box-shadow: var(--glow-purple);
+    animation: floatY 2s ease-in-out infinite;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+  }
+  .scroll-bottom-btn:hover { transform: translateY(-2px) scale(1.05); }
+
+  /* message bubbles are injected by chat.ts, styled globally in messages.css */
+
+  .chat-form {
+    position: relative;
+    display: flex;
+    gap: 10px;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-top: 4px;
+  }
+  .input-count {
+    position: absolute;
+    right: 92px;
+    top: 29px;
+    color: var(--muted);
+    font-size: 11px;
+    pointer-events: none;
+  }
+  .chat-input {
+    flex: 1;
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 15px;
+    background: color-mix(in srgb, var(--panel-solid) 70%, transparent);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    color: var(--white);
+    padding: 13px 52px 13px 18px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease;
+  }
+  :global(html[data-theme='light']) .chat-input {
+    background: rgba(255, 248, 235, 0.94);
+    border-color: rgba(55, 59, 125, 0.3);
+  }
+  .chat-input::placeholder { color: color-mix(in srgb, var(--muted) 78%, transparent); }
+  .chat-input:focus { outline: none; border-color: var(--sky); box-shadow: var(--glow-purple); }
+  .btn-send {
+    font-size: 14px;
+    background: linear-gradient(135deg, var(--mint), var(--sky));
+    color: var(--button-text);
+    border: none;
+    border-radius: 999px;
+    padding: 0 22px;
+    box-shadow: var(--glow-mint);
+    transition: transform 0.15s ease;
+  }
+  .btn-send:hover { transform: translateY(-2px); }
+  .btn-send:active { transform: translateY(0); }
+
+  @media (max-width: 560px) {
+    .chat-screen { padding: 10px; }
+    .chat-panel { padding: 14px; border-radius: 18px; }
+    .chat-toolbar { grid-template-columns: 1fr; }
+    .toolbar-title { font-size: 16px; }
+    .doc-metrics { justify-content: flex-start; }
+    .doc-metrics span,
+    .toolbar-btn,
+    .prompt-rail button { font-size: 11px; }
+    .prompt-rail { margin-left: -2px; margin-right: -2px; }
+    .detail-console { grid-template-columns: 1fr; }
+    .detail-value { white-space: normal; }
+    .chat-window { gap: 10px; padding-bottom: 14px; }
+    .chat-form { flex-direction: column; }
+    .input-count { right: 16px; top: 29px; }
+    .btn-send { min-height: 44px; }
+  }
+</style>

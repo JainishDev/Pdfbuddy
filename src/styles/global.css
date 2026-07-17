@@ -1,0 +1,476 @@
+/* ============================================================
+   global.css — all styling in one place: design tokens, base
+   element styles, chat bubble styles, and one-off effects.
+   (Previously split across theme.css / messages.css / effects.css —
+   merged since none of them were big enough to earn a separate file.)
+   ============================================================ */
+
+:root {
+  --ink: #11172d;
+  --bg-deep: #050712;
+  --bg-mid: #10172f;
+  --panel: rgba(13, 20, 42, 0.72);
+  --panel-solid: #121a33;
+  --panel-soft: rgba(255, 255, 255, 0.065);
+  --border: rgba(151, 174, 235, 0.22);
+
+  --pink: #ff6da8;
+  --mint: #50e3c2;
+  --yellow: #f6c85f;
+  --sky: #78b7ff;
+  --purple: #8d7cff;
+  --white: #f7f9ff;
+  --muted: #a9b6d8;
+  --button-text: #f7f9ff;
+
+  --glow-purple: 0 14px 40px rgba(101, 91, 255, 0.32);
+  --glow-mint: 0 12px 34px rgba(80, 227, 194, 0.26);
+  --glow-pink: 0 12px 34px rgba(255, 109, 168, 0.26);
+  --card-shadow: 0 22px 70px rgba(0, 0, 0, 0.46), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  --radius: 18px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg-deep);
+  color: var(--white);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  overflow-x: hidden;
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+/* ---- light theme override ----
+   Same variable names are reused everywhere on purpose: components
+   never need to know which theme is active, they just consume the
+   tokens below and the correct palette falls out automatically.
+
+   The accent colors (--pink/--mint/--yellow/--sky/--purple) get their
+   own, deeper light-mode shades. In dark mode they're used at near-full
+   brightness against a near-black background, which reads fine — but
+   several of them are also used as *text* color (status text, message
+   tags, badges). Reused unchanged against a near-white background they
+   turned into low-contrast pastel-on-white. Darkening them here keeps
+   every gradient/glow/background usage looking like part of the same
+   palette while making the text usages actually readable. */
+:root[data-theme='light'] {
+  --ink: #10182d;
+  --bg-deep: #b9d7f7;
+  --bg-mid: #b9a9ee;
+  --panel: rgba(245, 239, 255, 0.9);
+  --panel-solid: #fff7ea;
+  --panel-soft: rgba(68, 58, 136, 0.14);
+  --border: rgba(55, 59, 125, 0.3);
+
+  --white: #111a31;
+  --muted: #3f4b68;
+  --button-text: #ffffff;
+
+  --pink: #a61965;
+  --mint: #006f6b;
+  --yellow: #7b4f08;
+  --sky: #165894;
+  --purple: #4934a8;
+
+  --glow-purple: 0 18px 44px rgba(73, 52, 168, 0.24);
+  --glow-mint: 0 16px 34px rgba(0, 111, 107, 0.2);
+  --glow-pink: 0 16px 34px rgba(166, 25, 101, 0.2);
+  --card-shadow: 0 24px 70px rgba(37, 44, 96, 0.26), 0 1px 0 rgba(255, 255, 255, 0.86) inset;
+}
+
+.pixel-font {
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Reusable crossfade for swapping the upload/chat screens smoothly instead
+   of an instant display:none flip (which can't be transitioned). Toggled
+   from JS: add before removing .hidden, remove on the next frame. */
+.screen-fade-in {
+  animation: screenFadeIn 0.42s cubic-bezier(0.2, 0.85, 0.2, 1) both;
+}
+@keyframes screenFadeIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.995); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: var(--purple);
+  color: var(--white);
+}
+
+button {
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--purple);
+  border-radius: 8px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+
+/* ---- shared keyframes ---- */
+@keyframes floatY {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: var(--glow-purple); }
+  50% { box-shadow: 0 0 40px rgba(155, 107, 255, 0.85); }
+}
+
+@keyframes appIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes msgIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes pixelBounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes blink {
+  0%, 45% { transform: scaleY(1); }
+  50%, 55% { transform: scaleY(0.1); }
+  60%, 100% { transform: scaleY(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ============================================================
+   chat bubbles — injected dynamically by scripts/chat.ts, so they
+   must be global (Astro's scoped <style> won't reach elements
+   created via JS at runtime).
+   ============================================================ */
+
+.msg {
+  max-width: 82%;
+  padding: 13px 17px;
+  border-radius: 18px;
+  line-height: 1.5;
+  font-size: 15px;
+  animation: msgIn 0.3s ease-out;
+  white-space: pre-wrap;
+}
+
+.msg.user {
+  align-self: flex-end;
+  background: linear-gradient(135deg, var(--mint), #1fb897);
+  color: #062a22;
+  border-radius: 18px 18px 4px 18px;
+  box-shadow: 0 6px 18px rgba(53, 240, 192, 0.25);
+}
+
+.msg.assistant {
+  align-self: flex-start;
+  background: var(--panel-solid);
+  border: 1px solid var(--border);
+  color: var(--white);
+  border-radius: 18px 18px 18px 4px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+}
+
+.msg.assistant.fallback { border-color: var(--yellow); }
+
+.msg-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.msg-tag {
+  font-family: 'Outfit', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  color: var(--sky);
+}
+.msg.assistant.fallback .msg-tag { color: var(--yellow); }
+
+.msg-copy-btn {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--sky);
+  font-size: 11px;
+  line-height: 1;
+  opacity: 0.6;
+  transition: opacity 0.15s ease, transform 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.msg-copy-btn:hover { opacity: 1; transform: scale(1.1); }
+.msg-copy-btn.copied { opacity: 1; color: var(--mint); border-color: var(--mint); }
+
+.msg-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.msg-retry-btn {
+  width: auto;
+  border-radius: 999px;
+  padding: 0 8px;
+  gap: 4px;
+  color: var(--pink);
+}
+.msg-retry-btn:hover { color: var(--pink); border-color: var(--pink); }
+
+.msg-time {
+  display: block;
+  margin-top: 6px;
+  font-size: 10px;
+  opacity: 0.45;
+  letter-spacing: 0.5px;
+}
+
+.typing-msg {
+  align-self: flex-start;
+  display: flex;
+  gap: 6px;
+  padding: 14px 18px;
+  background: var(--panel-solid);
+  border: 1px solid var(--border);
+  border-radius: 18px 18px 18px 4px;
+}
+.typing-msg span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--purple);
+  box-shadow: var(--glow-purple);
+  animation: pixelBounce 1s infinite ease-in-out;
+}
+.typing-msg span:nth-child(2) { animation-delay: 0.15s; background: var(--pink); box-shadow: var(--glow-pink); }
+.typing-msg span:nth-child(3) { animation-delay: 0.3s; background: var(--mint); box-shadow: var(--glow-mint); }
+
+@media (max-width: 560px) {
+  .msg { max-width: 92%; }
+}
+
+/* ============================================================
+   one-off effects triggered from scripts/chrome.ts
+   ============================================================ */
+
+.launch-burst {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.launch-burst .burst-core {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff, var(--mint) 60%, transparent 75%);
+  box-shadow: 0 0 40px rgba(53, 240, 192, 0.9);
+  animation: burstPop 0.7s ease-out forwards;
+}
+
+.launch-burst .burst-particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--particle-color, var(--pink));
+  box-shadow: 0 0 10px currentColor;
+  animation: burstFly 0.7s ease-out forwards;
+  animation-delay: var(--delay, 0s);
+  --tx: 0px;
+  --ty: 0px;
+}
+
+@keyframes burstPop {
+  0% { transform: scale(0.3); opacity: 0; }
+  40% { transform: scale(1.4); opacity: 1; }
+  100% { transform: scale(0.6); opacity: 0; }
+}
+
+@keyframes burstFly {
+  0% { transform: translate(-50%, -50%) scale(0.6); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) scale(0); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .launch-burst { display: none; }
+}
+
+/* ---------------- theme transition ---------------- */
+
+.theme-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
+  overflow: hidden;
+  animation: themeVeil 0.92s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.theme-transition::before {
+  content: '';
+  position: absolute;
+  inset: -30%;
+  background:
+    radial-gradient(circle at 78% 12%, var(--theme-wash-a), transparent 0 18%, transparent 19%),
+    conic-gradient(from 210deg, var(--theme-wash-a), var(--theme-wash-b), var(--theme-wash-c), var(--theme-wash-a));
+  filter: blur(18px);
+  opacity: 0.7;
+  animation: themeSpin 0.92s ease-out forwards;
+}
+
+.theme-transition-core,
+.theme-transition-ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 50%;
+  translate: -50% -50%;
+}
+
+.theme-transition-core {
+  width: 18vmax;
+  height: 18vmax;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.76), var(--theme-wash-a) 36%, transparent 70%);
+  animation: themeCore 0.92s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.theme-transition-ring {
+  width: 24vmax;
+  height: 24vmax;
+  border: 2px solid color-mix(in srgb, var(--theme-wash-b) 70%, transparent);
+  box-shadow: 0 0 80px color-mix(in srgb, var(--theme-wash-c) 38%, transparent);
+  animation: themeRing 0.92s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.theme-transition.to-light {
+  --theme-wash-a: rgba(255, 199, 92, 0.8);
+  --theme-wash-b: rgba(120, 214, 214, 0.72);
+  --theme-wash-c: rgba(167, 122, 255, 0.72);
+}
+
+.theme-transition.to-dark {
+  --theme-wash-a: rgba(65, 55, 160, 0.86);
+  --theme-wash-b: rgba(18, 26, 67, 0.86);
+  --theme-wash-c: rgba(255, 109, 168, 0.46);
+}
+
+@keyframes themeVeil {
+  0% { opacity: 0; }
+  22% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes themeSpin {
+  from { transform: rotate(0deg) scale(0.8); }
+  to { transform: rotate(80deg) scale(1.25); }
+}
+
+@keyframes themeCore {
+  0% { transform: scale(0.2); opacity: 0; }
+  36% { opacity: 0.9; }
+  100% { transform: scale(7); opacity: 0; }
+}
+
+@keyframes themeRing {
+  0% { transform: scale(0.2) rotate(-18deg); opacity: 0; }
+  36% { opacity: 1; }
+  100% { transform: scale(5.5) rotate(18deg); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-transition { display: none; }
+}
+
+/* ---------------- button ripple ---------------- */
+/* overflow is toggled per-button by chrome.ts only while the ripple
+   plays, so it never permanently clips a button's glow box-shadow */
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  transform: scale(0);
+  animation: rippleAnim 0.6s ease-out;
+  pointer-events: none;
+}
+
+html[data-theme='light'] .ripple {
+  background: rgba(40, 20, 70, 0.18);
+}
+
+html[data-theme='light'] .msg.user {
+  background: linear-gradient(135deg, #006f6b, #165894);
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(0, 111, 107, 0.22);
+}
+
+html[data-theme='light'] .msg.assistant,
+html[data-theme='light'] .typing-msg {
+  background: rgba(255, 247, 234, 0.94);
+  color: #111a31;
+  border-color: rgba(55, 59, 125, 0.24);
+  box-shadow: 0 10px 26px rgba(37, 44, 96, 0.14);
+}
+
+@keyframes rippleAnim {
+  to { transform: scale(2.6); opacity: 0; }
+}

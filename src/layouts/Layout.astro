@@ -1,0 +1,51 @@
+---
+import SpaceBackground from '../components/SpaceBackground.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+}
+const { title = 'PDF Buddy — Ask Your PDF Anything' } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{title}</title>
+  <meta name="description" content="PDF Buddy — upload any PDF and ask it anything. Powered by AI." />
+  <meta name="theme-color" content="#0a0b1e" />
+
+  <!-- Open Graph / social sharing -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content="Upload any PDF and ask it anything. Powered by AI." />
+  <meta property="og:image" content="/apple-touch-icon.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/favicon.ico" sizes="any" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+  <script is:inline>
+    // Runs synchronously, before first paint, so there's no flash of
+    // the wrong theme. Kept inline (not a module) for that reason.
+    (function () {
+      try {
+        var stored = localStorage.getItem('pdf-buddy-theme');
+        var theme = stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <SpaceBackground />
+  <slot />
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "pdf-chatbot",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/netlify": "^8.1.2",
+    "astro": "^7.0.9",
+    "dotenv": "^17.4.2",
+    "firebase": "^11.6.0",
+    "firebase-admin": "^13.2.0",
+    "nanoid": "^6.0.0",
+    "pdf-parse": "^2.4.5"
+  }
+}

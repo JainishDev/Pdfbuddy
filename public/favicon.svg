@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="helmetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8d7cff"/>
+      <stop offset="55%" stop-color="#78b7ff"/>
+      <stop offset="100%" stop-color="#50e3c2"/>
+    </linearGradient>
+    <linearGradient id="visorGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0d1430"/>
+      <stop offset="100%" stop-color="#1c2550"/>
+    </linearGradient>
+  </defs>
+
+  <!-- helmet shell -->
+  <circle cx="32" cy="32" r="27" fill="url(#helmetGrad)"/>
+  <circle cx="32" cy="32" r="27" fill="none" stroke="#f7f9ff" stroke-opacity="0.35" stroke-width="1.5"/>
+
+  <!-- side antenna, nods to the app's robot mascot -->
+  <circle cx="53" cy="20" r="3.4" fill="#ff6da8"/>
+  <line x1="50.5" y1="22.5" x2="45" y2="27" stroke="#f7f9ff" stroke-opacity="0.55" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- visor -->
+  <ellipse cx="32" cy="34" rx="19" ry="16" fill="url(#visorGrad)"/>
+
+  <!-- reflected document page inside the visor -->
+  <g transform="translate(21, 21)">
+    <rect x="0" y="0" width="16" height="21" rx="2.5" fill="#f7f9ff"/>
+    <rect x="3.2" y="5" width="9.6" height="2" rx="1" fill="#78b7ff"/>
+    <rect x="3.2" y="9.4" width="9.6" height="2" rx="1" fill="#50e3c2"/>
+    <rect x="3.2" y="13.8" width="6.4" height="2" rx="1" fill="#ff6da8"/>
+  </g>
+
+  <!-- visor glare -->
+  <path d="M17 24 Q22 15 33 14" stroke="#ffffff" stroke-opacity="0.5" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+</svg>
