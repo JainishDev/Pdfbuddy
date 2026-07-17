@@ -23,6 +23,7 @@
         <button id="clear-chat-btn" class="toolbar-btn" type="button" title="Clear conversation">Clear</button>
       </div>
     </div>
+    <div class="prompt-rail-label">Quick prompts</div>
     <div class="prompt-rail" aria-label="Suggested questions">
       <button type="button" data-question="Summarize this PDF in five bullets.">Summarize</button>
       <button type="button" data-question="What are the key decisions or action items?">Actions</button>
@@ -30,7 +31,10 @@
       <button type="button" data-question="Explain the most complex part in simple words.">Explain simply</button>
       <button type="button" data-question="Create a study guide from this document.">Study guide</button>
     </div>
-    <div class="detail-console">
+
+    <div class="chat-divider" aria-hidden="true"></div>
+
+    <div class="detail-console" aria-label="Document insights">
       <div>
         <span class="detail-label">Common topics</span>
         <div id="detail-keyterms" class="detail-value">Waiting for document</div>
@@ -40,6 +44,9 @@
         <div id="detail-entities" class="detail-value">Dates, numbers, and links will show up here</div>
       </div>
     </div>
+
+    <div class="chat-divider chat-divider-tight" aria-hidden="true"></div>
+
     <div id="chat-window" class="chat-window"></div>
     <button id="scroll-bottom-btn" class="scroll-bottom-btn hidden" type="button" title="Jump to latest">↓</button>
 
@@ -83,6 +90,20 @@
     box-shadow: var(--card-shadow);
     padding: 20px;
     overflow: hidden;
+  }
+  /* Same top accent bar used on the landing sections, so the chat
+     screen reads as part of the same designed app instead of a
+     plainer "functional" leftover. */
+  .chat-panel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 14%;
+    right: 14%;
+    height: 3px;
+    border-radius: 0 0 4px 4px;
+    background: linear-gradient(90deg, var(--purple), var(--pink), var(--mint));
+    pointer-events: none;
   }
   :global(html[data-theme='light']) .chat-panel {
     background:
@@ -156,20 +177,37 @@
   }
   .toolbar-actions { display: flex; gap: 8px; }
   .toolbar-btn:hover { color: var(--white); border-color: var(--sky); transform: translateY(-1px); }
+  .prompt-rail-label {
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 8px;
+  }
   .prompt-rail {
     position: relative;
     display: flex;
     gap: 8px;
     overflow-x: auto;
     padding: 0 0 12px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
+  /* Thin separators between the toolbar / prompts / insights / messages
+     groups — previously just margin, which let all four blend into one
+     continuous column. A hairline break gives each group its own edge
+     without the visual weight of a full card border. */
+  .chat-divider {
+    height: 1px;
+    margin: 4px 0 14px;
+    background: linear-gradient(90deg, transparent, var(--border) 15%, var(--border) 85%, transparent);
+  }
+  .chat-divider-tight { margin: 0 0 12px; }
   .detail-console {
     position: relative;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin: 0 0 12px;
+    margin: 0;
   }
   .detail-console > div {
     border: 1px solid var(--border);
@@ -219,6 +257,13 @@
     gap: 14px;
     padding: 8px 4px 20px;
     scroll-behavior: smooth;
+    /* iOS momentum scrolling — without this, flicking through a long
+       chat feels stiff/laggy on Safari specifically. */
+    -webkit-overflow-scrolling: touch;
+    /* Stops a scroll that hits the top/bottom of the message list from
+       bleeding into the page behind it (the classic "whole app jumps"
+       feel when you overscroll a chat on mobile). */
+    overscroll-behavior: contain;
   }
 
   .scroll-bottom-btn {

@@ -37,6 +37,54 @@
   </button>
 </div>
 
+<script>
+  // Permanent dismiss for Bit. This is intentionally self-contained —
+  // it doesn't assume anything about how src/scripts/robot.ts times or
+  // triggers Bit's appearance (that file wasn't part of what I could
+  // see), it just guarantees the end result: once someone closes Bit,
+  // he stays gone, on this reload and every future visit.
+  const DISMISS_KEY = 'bitMascotDismissedForever';
+  const mascotEl = document.getElementById('bit-mascot');
+  const closeBtn = document.getElementById('bit-close');
+
+  const isDismissedForever = () => {
+    try {
+      return localStorage.getItem(DISMISS_KEY) === '1';
+    } catch {
+      // localStorage can throw in locked-down/private-browsing contexts —
+      // fail open (Bit can still appear) rather than break the page.
+      return false;
+    }
+  };
+
+  const hideForGood = () => {
+    if (!mascotEl) return;
+    mascotEl.classList.add('hidden');
+  };
+
+  if (mascotEl && isDismissedForever()) {
+    hideForGood();
+    // Whatever other script shows Bit (timers, triggers, etc.) does so
+    // by removing the "hidden" class — if that happens after someone
+    // already dismissed him for good, put it right back.
+    new MutationObserver(() => {
+      if (isDismissedForever() && !mascotEl.classList.contains('hidden')) {
+        mascotEl.classList.add('hidden');
+      }
+    }).observe(mascotEl, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  closeBtn?.addEventListener('click', () => {
+    try {
+      localStorage.setItem(DISMISS_KEY, '1');
+    } catch {
+      // Best-effort — if storage isn't available, Bit still closes for
+      // this session even though the choice won't persist.
+    }
+    hideForGood();
+  });
+</script>
+
 <style>
   .bit-mascot {
     position: fixed;

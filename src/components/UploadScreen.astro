@@ -1,10 +1,13 @@
 ---
 // src/components/UploadScreen.astro
-// The "before a document is loaded" screen: mascot, dropzone, status/error states.
+// The "before a document is loaded" screen: mascot, dropzone, status/error
+// states, plus (below the fold) the how-it-works / features / FAQ sections.
 // Behavior (drag/drop, file picking, upload request) lives in src/scripts/upload.ts
+import AboutSections from './AboutSections.astro';
 ---
 
 <section id="upload-screen" class="upload-screen">
+  <div class="upload-hero">
   <div class="mascot" id="mascot">
     <div class="mascot-glow"></div>
     <div class="mascot-orbit">
@@ -70,6 +73,9 @@
   </div>
 
   <div id="upload-error" class="upload-error hidden"></div>
+  </div>
+
+  <AboutSections />
 </section>
 
 <style>
@@ -78,9 +84,21 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 48px 20px 44px;
+    padding: 0 20px 64px;
     text-align: center;
+  }
+
+  .upload-hero {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Keeps the hero feeling centered on first load (same as before)
+       without forcing it to fight the sections now living below it
+       for vertical space in a single centered flex column. */
+    min-height: min(640px, 86dvh);
+    justify-content: center;
+    padding: 48px 0 44px;
   }
 
   .upload-title {
@@ -314,10 +332,14 @@
 
   @media (max-width: 560px) {
     .upload-screen {
-      justify-content: flex-start;
-      padding: 28px 14px 26px;
       padding-left: calc(14px + var(--safe-left, 0px));
       padding-right: calc(14px + var(--safe-right, 0px));
+      padding-bottom: 40px;
+    }
+    .upload-hero {
+      justify-content: flex-start;
+      min-height: 0;
+      padding: 28px 0 26px;
     }
     .mascot { width: 88px; height: 88px; margin-bottom: 10px; }
     .mascot-orbit { inset: -24px; }

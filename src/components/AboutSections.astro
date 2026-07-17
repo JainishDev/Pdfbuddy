@@ -1,0 +1,378 @@
+---
+// src/components/AboutSections.astro
+// Sits below the dropzone on the upload screen: "how it works", a
+// features grid, and an FAQ accordion. Lives inside #upload-screen so
+// it automatically hides once a document loads (same .hidden toggle
+// as the rest of that screen — no extra wiring needed).
+// Fully functional with zero JS (native <details> for the FAQ); the
+// one inline script only adds an optional scroll-reveal polish.
+---
+
+<div class="about-sections">
+  <div class="section-divider" aria-hidden="true"><span class="divider-orb"></span></div>
+
+  <section class="about-block how-it-works" aria-labelledby="how-it-works-title">
+    <div class="about-panel reveal">
+      <span class="about-kicker pixel-font">Step by step</span>
+      <h2 id="how-it-works-title" class="pixel-font about-heading">How It Works</h2>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num pixel-font">1</div>
+          <h3 class="step-title">Drop your PDF</h3>
+          <p class="step-copy">Drag a file in or tap Choose File. Nothing installs, nothing to sign up for first.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num pixel-font">2</div>
+          <h3 class="step-title">Ask anything</h3>
+          <p class="step-copy">Type a question, or tap one of the suggested prompts to get moving instantly.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num pixel-font">3</div>
+          <h3 class="step-title">Get real answers</h3>
+          <p class="step-copy">Answers are pulled straight from your document, with key details and numbers surfaced automatically.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider" aria-hidden="true"><span class="divider-orb orb-mint"></span></div>
+
+  <section class="about-block features" aria-labelledby="features-title">
+    <div class="about-panel reveal">
+      <span class="about-kicker pixel-font">Why PDF Buddy</span>
+      <h2 id="features-title" class="pixel-font about-heading">What You Get</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <span class="feature-dot dot-pink" aria-hidden="true"></span>
+          <h3 class="feature-title">Quick summaries</h3>
+          <p class="feature-copy">Skip the skim — get the gist of long documents in seconds.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-dot dot-mint" aria-hidden="true"></span>
+          <h3 class="feature-title">Finds key details</h3>
+          <p class="feature-copy">Dates, numbers, names, and action items, pulled out automatically.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-dot dot-sky" aria-hidden="true"></span>
+          <h3 class="feature-title">Answers from your file</h3>
+          <p class="feature-copy">Every reply is grounded in what's actually in your PDF, not a guess.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-dot dot-yellow" aria-hidden="true"></span>
+          <h3 class="feature-title">Useful stats</h3>
+          <p class="feature-copy">Page count, word count, and read time at a glance.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-dot dot-purple" aria-hidden="true"></span>
+          <h3 class="feature-title">Easy re-upload</h3>
+          <p class="feature-copy">Switch documents any time — your history stays put in this browser.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-dot dot-pink" aria-hidden="true"></span>
+          <h3 class="feature-title">Built for mobile</h3>
+          <p class="feature-copy">Same fast experience whether you're on a laptop or in one hand on the go.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-divider" aria-hidden="true"><span class="divider-orb orb-sky"></span></div>
+
+  <section class="about-block faq" aria-labelledby="faq-title">
+    <div class="about-panel reveal">
+      <span class="about-kicker pixel-font">Good to know</span>
+      <h2 id="faq-title" class="pixel-font about-heading">Frequently Asked Questions</h2>
+      <div class="faq-list">
+        <details class="faq-item">
+          <summary>Is my PDF stored anywhere?</summary>
+          <p>Your document and chat history stay in this browser tab. Re-uploading or closing the tab is the same as clearing them.</p>
+        </details>
+        <details class="faq-item">
+          <summary>What file types are supported?</summary>
+          <p>PDF Buddy currently reads PDF files. Support for more formats may come later.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Is there a file size limit?</summary>
+          <p>Very large PDFs may take longer to process, but most everyday documents — reports, contracts, papers, manuals — work smoothly.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Does it work well on mobile?</summary>
+          <p>Yes — the whole app, from upload to chat, is built mobile-first and works the same on a phone as on a desktop.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Do I need an account?</summary>
+          <p>No. You can upload and chat right away. Signing in just keeps your preferences with you across devices.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Can I ask follow-up questions?</summary>
+          <p>Yes — keep chatting in the same thread and each answer stays grounded in the document you uploaded.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+</div>
+
+<style>
+  /* ---- mobile-first base: everything below is written for a small
+     screen first, then widened with min-width queries — the opposite
+     of the max-width overrides used elsewhere, on purpose, since this
+     block's whole job is to look right on a phone by default. ---- */
+  .about-sections {
+    width: 100%;
+    max-width: 920px;
+    margin: 8px auto 0;
+    padding: 0 4px;
+  }
+
+  .about-block {
+    margin: 0;
+  }
+
+  /* ---- decorative divider between sections ----
+     A short dashed line with a glowing orb centered on it — reads as
+     a clear stop between blocks (like a chapter break) rather than
+     more margin, which is what made everything feel like one long
+     dump before. Alternates accent color per divider so the page has
+     a rhythm instead of repeating the same ornament three times. */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 44px 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border) 20%, var(--border) 80%, transparent);
+    position: relative;
+  }
+  .divider-orb {
+    position: relative;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 30%, var(--yellow), var(--pink) 70%);
+    box-shadow: 0 0 16px rgba(255, 109, 168, 0.55);
+  }
+  .divider-orb.orb-mint { background: radial-gradient(circle at 32% 30%, #d9fff5, var(--mint) 70%); box-shadow: 0 0 16px rgba(80, 227, 194, 0.55); }
+  .divider-orb.orb-sky { background: radial-gradient(circle at 32% 30%, #eaf5ff, var(--sky) 70%); box-shadow: 0 0 16px rgba(120, 183, 255, 0.55); }
+
+  /* ---- the panel each section lives in ----
+     Its own bounded card with a faint tinted wash and a top accent
+     bar, so each section clearly reads as a separate, self-contained
+     piece of content on the starfield rather than text floating
+     directly on the background. */
+  .about-panel {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.05), transparent 40%),
+      var(--panel);
+    box-shadow: var(--card-shadow);
+    padding: 30px 18px 34px;
+    overflow: hidden;
+  }
+  .about-panel::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 14%;
+    right: 14%;
+    height: 3px;
+    border-radius: 0 0 4px 4px;
+    background: linear-gradient(90deg, var(--purple), var(--pink), var(--mint));
+  }
+  :global(html[data-theme='light']) .about-panel {
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.5), transparent 40%),
+      linear-gradient(165deg, rgba(255, 247, 234, 0.86), rgba(230, 225, 255, 0.88));
+    border-color: rgba(55, 59, 125, 0.24);
+  }
+
+  .about-kicker {
+    display: block;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--mint);
+    margin: 0 0 8px;
+  }
+  .about-heading {
+    font-size: clamp(20px, 5.5vw, 28px);
+    color: var(--white);
+    text-align: center;
+    margin: 0 0 24px;
+  }
+
+  /* -- how it works -- */
+  .steps-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .step-card {
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 16px;
+    text-align: left;
+  }
+  .step-num {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--purple), var(--pink));
+    color: var(--button-text);
+    font-size: 14px;
+    box-shadow: var(--glow-purple);
+    margin-bottom: 10px;
+  }
+  .step-title {
+    font-size: 16px;
+    color: var(--white);
+    margin: 0 0 6px;
+  }
+  .step-copy {
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* -- features -- */
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .feature-card {
+    position: relative;
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 16px 16px 40px;
+    text-align: left;
+  }
+  .feature-dot {
+    position: absolute;
+    top: 20px;
+    left: 16px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .dot-pink { background: var(--pink); box-shadow: 0 0 12px rgba(255, 109, 168, 0.7); }
+  .dot-mint { background: var(--mint); box-shadow: 0 0 12px rgba(80, 227, 194, 0.7); }
+  .dot-sky { background: var(--sky); box-shadow: 0 0 12px rgba(120, 183, 255, 0.7); }
+  .dot-yellow { background: var(--yellow); box-shadow: 0 0 12px rgba(246, 200, 95, 0.7); }
+  .dot-purple { background: var(--purple); box-shadow: 0 0 12px rgba(141, 124, 255, 0.7); }
+  .feature-title {
+    font-size: 15px;
+    color: var(--white);
+    margin: 0 0 4px;
+  }
+  .feature-copy {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* -- faq -- */
+  .faq-list {
+    display: grid;
+    gap: 8px;
+  }
+  .faq-item {
+    background: var(--panel-soft);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 2px 16px;
+    overflow: hidden;
+  }
+  .faq-item summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 26px 14px 0;
+    font-size: 14px;
+    color: var(--white);
+    font-weight: 600;
+    position: relative;
+    /* Comfortably above the 44px touch-target minimum even though the
+       text line itself is short — the whole summary row is tappable. */
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: '+';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--mint);
+    font-size: 18px;
+    line-height: 1;
+    transition: transform 0.25s ease;
+  }
+  .faq-item[open] summary::after {
+    transform: translateY(-50%) rotate(45deg);
+  }
+  .faq-item p {
+    margin: 0 0 16px;
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--muted);
+  }
+  /* Native <details> toggling is instant (display swap) with no
+     animation hook cross-browser yet, so we settle for a quick fade
+     on the answer text rather than fighting the platform for a height
+     transition — cheap, reliable, and still feels intentional. */
+  .faq-item[open] p {
+    animation: faqFadeIn 0.22s ease both;
+  }
+  @keyframes faqFadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  :global(html[data-theme='light']) .step-card,
+  :global(html[data-theme='light']) .feature-card,
+  :global(html[data-theme='light']) .faq-item {
+    background: rgba(255, 247, 234, 0.7);
+    border-color: rgba(55, 59, 125, 0.22);
+  }
+
+  /* -- widen up from mobile -- */
+  @media (min-width: 640px) {
+    .steps-grid { grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .features-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .about-panel { padding: 40px 44px 46px; }
+    .section-divider { margin: 56px 0; }
+  }
+  @media (min-width: 900px) {
+    .features-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+
+<script>
+  // Progressive enhancement only: everything above is already visible
+  // and fully usable without this. It just adds a one-shot fade/slide
+  // as each block scrolls into view. Self-contained — no dependency on
+  // any other app script.
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('in-view');
+          io.unobserve(entry.target);
+        }
+      }
+    },
+    { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
+  );
+  document.querySelectorAll('.about-sections .reveal').forEach((el) => io.observe(el));
+</script>

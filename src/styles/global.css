@@ -5,6 +5,34 @@
    merged since none of them were big enough to earn a separate file.)
    ============================================================ */
 
+/* ---- theme-color property registration ----
+   A plain custom property (--ink, --pink, etc.) is just a string to the
+   browser — transitioning it with `transition: --ink .4s ease` has no
+   defined interpolation, so the value snaps to the new theme partway
+   through instead of fading. That snap is the light/dark "glitch".
+   Registering each one with @property and a <color> syntax gives the
+   browser a real type to interpolate, so the transition below actually
+   animates smoothly instead of jump-cutting mid-fade. Composite values
+   (box-shadow strings like --glow-purple) can't be registered this way
+   since @property only supports a single typed value, so those still
+   swap instantly — but a shadow snapping is far less noticeable than a
+   whole surface color jumping, which is the part that reads as broken. */
+@property --ink { syntax: '<color>'; inherits: true; initial-value: #11172d; }
+@property --bg-deep { syntax: '<color>'; inherits: true; initial-value: #050712; }
+@property --bg-mid { syntax: '<color>'; inherits: true; initial-value: #10172f; }
+@property --panel { syntax: '<color>'; inherits: true; initial-value: rgba(13, 20, 42, 0.72); }
+@property --panel-solid { syntax: '<color>'; inherits: true; initial-value: #121a33; }
+@property --panel-soft { syntax: '<color>'; inherits: true; initial-value: rgba(255, 255, 255, 0.065); }
+@property --border { syntax: '<color>'; inherits: true; initial-value: rgba(151, 174, 235, 0.22); }
+@property --pink { syntax: '<color>'; inherits: true; initial-value: #ff6da8; }
+@property --mint { syntax: '<color>'; inherits: true; initial-value: #50e3c2; }
+@property --yellow { syntax: '<color>'; inherits: true; initial-value: #f6c85f; }
+@property --sky { syntax: '<color>'; inherits: true; initial-value: #78b7ff; }
+@property --purple { syntax: '<color>'; inherits: true; initial-value: #8d7cff; }
+@property --white { syntax: '<color>'; inherits: true; initial-value: #f7f9ff; }
+@property --muted { syntax: '<color>'; inherits: true; initial-value: #a9b6d8; }
+@property --button-text { syntax: '<color>'; inherits: true; initial-value: #f7f9ff; }
+
 :root {
   --ink: #11172d;
   --bg-deep: #050712;
@@ -29,8 +57,10 @@
   --card-shadow: 0 22px 70px rgba(0, 0, 0, 0.46), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
   --radius: 18px;
 
-  /* Smooth theme transition for all CSS custom properties */
-  transition: 
+  /* Now that the colors above are registered <color> types, this
+     transition genuinely interpolates instead of snapping. Composite
+     shadow vars are intentionally left out — see note above. */
+  transition:
     --ink 0.4s ease,
     --bg-deep 0.4s ease,
     --bg-mid 0.4s ease,
@@ -46,12 +76,20 @@
     --white 0.4s ease,
     --muted 0.4s ease,
     --button-text 0.4s ease,
-    --glow-purple 0.4s ease,
-    --glow-mint 0.4s ease,
-    --glow-pink 0.4s ease,
-    --card-shadow 0.4s ease,
     background-color 0.4s ease,
     color 0.4s ease;
+}
+
+/* Respect the user's motion preference across every theme/screen
+   animation in the app, not just the ones already guarded below. */
+@media (prefers-reduced-motion: reduce) {
+  :root { transition-duration: 0.001ms !important; }
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 * {
@@ -509,5 +547,72 @@ html[data-theme='light'] .typing-msg {
     width: 44px;
     height: 44px;
     transform: translate(-50%, -50%);
+  }
+}
+
+/* ============================================================
+   mobile GPU budget — backdrop-filter is one of the heaviest
+   properties a mobile compositor can be asked to run, and this
+   app leans on it for four different frosted-glass panels. On a
+   small/low-power screen, running a wide blur radius under a
+   panel that's also being animated (opening, scrolling, theme
+   fading) is the single most common cause of dropped frames and
+   visible stutter. Shrinking the radius on narrow viewports
+   keeps the frosted look while cutting the per-frame cost
+   drastically — most people can't tell an 18px blur from a 9px
+   blur, but their phone can absolutely tell the difference in
+   compositing time.
+   ============================================================ */
+@media (max-width: 560px) {
+  :global(.dropzone),
+  :global(.analysis-card) {
+    backdrop-filter: blur(9px) !important;
+  }
+  :global(.chat-panel) {
+    backdrop-filter: blur(8px) !important;
+  }
+  :global(.topbar) {
+    backdrop-filter: blur(10px) !important;
+  }
+}
+
+/* Low-power / battery-saver signal some mobile browsers expose —
+   drop the frosted-glass effect entirely rather than fight for
+   GPU time the device has told us it doesn't want to spend. */
+@media (max-width: 560px) and (prefers-reduced-motion: reduce) {
+  :global(.dropzone),
+  :global(.analysis-card),
+  :global(.chat-panel),
+  :global(.topbar) {
+    backdrop-filter: none !important;
+  }
+}
+
+/* ============================================================
+   scroll-reveal utility — used by the new info sections below
+   the dropzone (how-it-works / features / FAQ). Progressive
+   enhancement: everything is fully visible with no JS at all;
+   a tiny IntersectionObserver (scoped to that component) adds
+   .in-view the first time a section scrolls into frame, which
+   plays a one-shot fade/slide-up. Transform + opacity only, so
+   it's compositor-only work — no layout or paint cost per frame,
+   which is what keeps it smooth on mobile.
+   ============================================================ */
+.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+}
+.reveal.in-view {
+  animation: revealIn 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) forwards;
+}
+@keyframes revealIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.in-view {
+    opacity: 1;
+    transform: none;
+    animation: none;
   }
 }
