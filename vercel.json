@@ -5,7 +5,7 @@
   "framework": "astro",
   "regions": ["iad1"],
   "functions": {
-    "src/pages/api/**/*.ts": {
+    "_render.func": {
       "maxDuration": 60
     }
   },
