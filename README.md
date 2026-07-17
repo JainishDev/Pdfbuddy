@@ -5,7 +5,13 @@
 
 ---
 
-## 👨‍🎓 Student Information
+## � Live Demo
+
+**[🌐 https://pdfbuddyai.netlify.app](https://pdfbuddyai.netlify.app)** — Try it now!
+
+---
+
+## �👨‍🎓 Student Information
 - **Name:** Patel Jainish M.
 - **Enrollment No:** 240163116022
 - **Semester:** 7th Sem
