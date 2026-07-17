@@ -3,8 +3,13 @@
 // *what* it says. Talks to auth.ts for sign-in state and isFirebaseConfigured
 // so it never nags when Firebase isn't even set up.
 
-import { isFirebaseConfigured } from '../lib/firebase';
-import { isAnonymous, upgradeAccount, AUTH_READY_EVENT, AUTH_UPGRADED_EVENT } from './auth';
+import {
+  isFirebaseConfigured,
+  signInWithGoogle,
+  signInWithEmailPassword,
+  signUpWithEmailPassword,
+} from '../lib/firebase';
+import { isAnonymous, authState, AUTH_READY_EVENT, AUTH_UPGRADED_EVENT } from './auth';
 
 const SEEN_KEY = 'bit_seen';
 const NUDGED_THIS_SESSION_KEY = 'bit_nudged_session'; // sessionStorage: max 1 nudge/session
@@ -31,6 +36,8 @@ let elements: {
   googleBtn: HTMLButtonElement;
   laterBtn: HTMLButtonElement;
 } | null = null;
+
+let signUpMode = true; // robot is a signup nudge, default to sign-up
 
 export function initRobot() {
   if (!isFirebaseConfigured()) return; // no accounts feature = no nudging
@@ -61,10 +68,10 @@ export function initRobot() {
       hide();
     }
   });
-  elements.googleBtn.addEventListener('click', () => handleUpgrade({ type: 'google' }));
+  elements.googleBtn.addEventListener('click', () => handleSignIn({ type: 'google' }));
   elements.emailForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    handleUpgrade({
+    handleSignIn({
       type: 'email',
       email: elements!.emailInput.value.trim(),
       password: elements!.passwordInput.value,
@@ -139,10 +146,19 @@ function typeMessage(html: string) {
   step();
 }
 
-async function handleUpgrade(method: { type: 'email'; email: string; password: string } | { type: 'google' }) {
+async function handleSignIn(method: { type: 'email'; email: string; password: string } | { type: 'google' }) {
   if (!elements) return;
   try {
-    await upgradeAccount(method);
+    let user;
+    if (method.type === 'google') {
+      user = await signInWithGoogle();
+    } else {
+      // Robot is a signup nudge, so create account
+      user = await signUpWithEmailPassword(method.email, method.password);
+    }
+    authState.user = user;
+    // Fire auth-ready event so other parts of the app (top bar, etc.) update
+    window.dispatchEvent(new CustomEvent('pdfbuddy:auth-ready', { detail: { user } }));
     // onUpgraded() handles the success message via the auth-upgraded event.
   } catch (err: any) {
     elements.text.textContent = `Hmm, that didn't work: ${err?.message ?? 'unknown error'}. Try again?`;
