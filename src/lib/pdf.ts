@@ -1,7 +1,27 @@
-// Polyfill canvas APIs for pdfjs-dist (DOMMatrix, ImageData, Path2D)
-import 'canvas';
+// Polyfill browser canvas APIs (DOMMatrix, ImageData, Path2D) that pdfjs-dist's
+// Node "legacy" build expects at import time. This MUST run before `unpdf` (and
+// therefore `pdfjs-dist`) is imported below.
+//
+// Note: pdfjs-dist specifically looks for `@napi-rs/canvas` (not the old `canvas`
+// package) to auto-polyfill these globals, and merely `import`-ing a package
+// doesn't attach anything to `globalThis` on its own — we have to assign it
+// ourselves so this works reliably once bundled for serverless.
+import { DOMMatrix, ImageData, Path2D } from '@napi-rs/canvas';
 
-import { PDFParse } from 'pdf-parse';
+if (typeof globalThis.DOMMatrix === 'undefined') {
+  // @ts-expect-error - polyfilling a browser global pdfjs-dist expects in Node
+  globalThis.DOMMatrix = DOMMatrix;
+}
+if (typeof globalThis.ImageData === 'undefined') {
+  // @ts-expect-error - polyfilling a browser global pdfjs-dist expects in Node
+  globalThis.ImageData = ImageData;
+}
+if (typeof globalThis.Path2D === 'undefined') {
+  // @ts-expect-error - polyfilling a browser global pdfjs-dist expects in Node
+  globalThis.Path2D = Path2D;
+}
+
+import { extractText, getDocumentProxy } from 'unpdf';
 
 export interface ParsedPdf {
   text: string;
@@ -9,16 +29,12 @@ export interface ParsedPdf {
 }
 
 export async function parsePdf(buffer: Buffer): Promise<ParsedPdf> {
-  const parser = new PDFParse({ data: new Uint8Array(buffer) });
-  try {
-    const result = await parser.getText();
-    return {
-      text: result.text || '',
-      numPages: result.pages?.length || result.total || 0,
-    };
-  } finally {
-    await parser.destroy();
-  }
+  const pdf = await getDocumentProxy(new Uint8Array(buffer));
+  const { text } = await extractText(pdf, { mergePages: true });
+  return {
+    text: text || '',
+    numPages: pdf.numPages || 0,
+  };
 }
 
 /**
