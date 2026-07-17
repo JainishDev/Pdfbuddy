@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@astrojs/vercel": "^11.0.3",
+    "@napi-rs/canvas": "^0.1.65",
     "astro": "^7.0.9",
     "dotenv": "^17.4.2",
     "firebase": "^11.6.0",
