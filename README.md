@@ -5,13 +5,7 @@
 
 ---
 
-## � Live Demo
-
-**[🌐 https://pdfbuddyai.netlify.app](https://pdfbuddyai.netlify.app)** — Try it now!
-
----
-
-## �👨‍🎓 Student Information
+## �‍🎓 Student Information
 - **Name:** Patel Jainish M.
 - **Enrollment No:** 240163116022
 - **Semester:** 7th Sem
@@ -22,6 +16,8 @@
 ## 📖 About This Repository
 
 **PDF Buddy** is an AI-powered PDF chat assistant that allows users to upload PDF documents and ask questions about their content using natural language. The application leverages Google's Gemini AI models for both document embedding and intelligent question answering.
+
+**Live Link:**pdfbuddyai.netlify.app
 
 ### 🎯 Project Overview
 
