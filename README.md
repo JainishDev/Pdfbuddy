@@ -20,7 +20,8 @@
 
 ### 🌐 Live Demo
 
-**🔗 Live Application:** https://pdfbuddyai.netlify.app
+**🔗 Live Application:** https://pdfbuddyai.netlify.app (Netlify - legacy)
+**🔗 Vercel Deployment:** [Add your Vercel URL after deployment]
 
 ---
 ### 🎯 Project Overview
@@ -168,16 +169,21 @@ Get your API key from [Google AI Studio](https://aistudio.google.com/apikey)
 | `npm run preview` | Preview production build |
 | `npm run astro` | Run Astro CLI commands |
 
-### 🌐 Deployment to Netlify
+### 🌐 Deployment to Vercel (Recommended)
 
-This project is configured for easy deployment to Netlify:
+This project is configured for easy deployment to Vercel:
 
 1. Push to GitHub/GitLab/Bitbucket
-2. Import project in Netlify
-3. Add `GEMINI_API_KEY` environment variable
+2. Import project in Vercel
+3. Add environment variables in Vercel Dashboard → Settings → Environment Variables:
+   - `GEMINI_API_KEY` (required)
+   - `PUBLIC_FIREBASE_API_KEY`, `PUBLIC_FIREBASE_AUTH_DOMAIN`, `PUBLIC_FIREBASE_PROJECT_ID`, `PUBLIC_FIREBASE_STORAGE_BUCKET`, `PUBLIC_FIREBASE_MESSAGING_SENDER_ID`, `PUBLIC_FIREBASE_APP_ID` (for auth)
+   - `FIREBASE_ADMIN_PROJECT_ID`, `FIREBASE_ADMIN_CLIENT_EMAIL`, `FIREBASE_ADMIN_PRIVATE_KEY` (for server-side auth)
 4. Deploy!
 
-The `netlify.toml` is configured with the Astro adapter for serverless deployment.
+The `vercel.json` is configured with the Astro adapter for serverless deployment with 60s function timeout (Vercel Pro) for PDF processing.
+
+See `.env.vercel.example` for a complete list of environment variables.
 
 ### 🔧 API Endpoints
 

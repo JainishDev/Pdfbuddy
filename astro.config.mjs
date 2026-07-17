@@ -1,13 +1,12 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import netlify from '@astrojs/netlify';
+import vercel from '@astrojs/vercel';
 
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
-  adapter: netlify({
-    edgeMiddleware: false,
-    // Increase function timeout for PDF processing
-    functionTimeout: 26,
+  adapter: vercel({
+    // Vercel handles function timeouts differently - max 60s on Pro, 10s on Hobby
+    // We'll rely on Vercel's defaults and our application-level timeouts
   }),
 });
