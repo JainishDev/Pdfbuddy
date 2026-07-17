@@ -189,6 +189,7 @@
 
   .btn-primary {
     font-size: 14px;
+    min-height: 48px;
     background: linear-gradient(135deg, var(--yellow), var(--pink));
     color: var(--button-text);
     border: none;
@@ -312,15 +313,21 @@
   }
 
   @media (max-width: 560px) {
-    .upload-screen { justify-content: flex-start; padding: 28px 14px 26px; }
+    .upload-screen {
+      justify-content: flex-start;
+      padding: 28px 14px 26px;
+      padding-left: calc(14px + var(--safe-left, 0px));
+      padding-right: calc(14px + var(--safe-right, 0px));
+    }
     .mascot { width: 88px; height: 88px; margin-bottom: 10px; }
     .mascot-orbit { inset: -24px; }
     .upload-title { font-size: 34px; line-height: 1; margin-top: 14px; }
     .upload-sub { font-size: 14px; line-height: 1.55; margin-bottom: 18px; }
     .feature-strip { gap: 6px; margin-bottom: 16px; }
     .feature-strip span { font-size: 11px; padding: 6px 9px; }
-    .dropzone { width: 100%; padding: 24px 16px; }
+    .dropzone { width: 100%; padding: 28px 16px; }
     .dz-orbit { width: 64px; height: 64px; }
+    .btn-primary { width: 100%; max-width: 320px; }
     .analysis-card { grid-template-columns: 1fr; text-align: center; justify-items: center; }
     .analysis-copy { width: 100%; }
     .analysis-steps { grid-template-columns: 1fr 1fr; }

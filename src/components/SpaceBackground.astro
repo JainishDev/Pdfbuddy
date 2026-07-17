@@ -326,4 +326,20 @@ const shootingStars = [
     .cosmic-dust,
     .sun-core { animation: none; }
   }
+
+  /* ---- mobile perf pass ----
+     Blurred, animated full-viewport layers are one of the more expensive
+     things to ask a phone GPU to repaint every frame. None of this is
+     load-bearing for the UI, so on small/touch screens we shrink the
+     blur radius (cost scales roughly with blur² ) and drop the biggest,
+     least-noticeable-when-missing layer entirely. */
+  @media (max-width: 640px) {
+    .nebula { filter: blur(36px); width: 260px; height: 260px; }
+    .planet-main { display: none; }
+    .shooting-star:nth-child(n + 4) { display: none; }
+  }
+  @media (max-width: 640px) and (pointer: coarse) {
+    .cosmic-dust { animation: none; }
+    .sun-core { animation: none; }
+  }
 </style>

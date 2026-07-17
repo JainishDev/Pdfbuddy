@@ -158,8 +158,9 @@
     background: var(--panel-soft);
     border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 7px 10px;
-    font-size: 12.5px;
+    padding: 10px;
+    /* 16px stops iOS Safari's auto-zoom-on-focus */
+    font-size: 16px;
     color: var(--white);
   }
   .bit-input:focus { outline: 1px solid var(--sky); }
@@ -186,8 +187,9 @@
   .bit-btn-ghost { background: transparent; border-color: transparent; color: var(--muted); }
 
   @media (max-width: 620px) {
-    .bit-mascot { right: 12px; top: 72px; }
+    .bit-mascot { right: calc(12px + var(--safe-right, 0px)); top: 112px; }
     .bit-bubble { max-width: min(72vw, 240px); }
     .bit-avatar { width: 52px; height: 52px; }
+    .bit-btn { min-height: 40px; }
   }
 </style>

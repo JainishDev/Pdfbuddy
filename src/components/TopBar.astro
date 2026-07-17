@@ -288,6 +288,8 @@
       align-items: flex-start;
       gap: 12px;
       padding: 12px 14px;
+      padding-left: calc(14px + var(--safe-left, 0px));
+      padding-right: calc(14px + var(--safe-right, 0px));
     }
     .brand-wrap { column-gap: 8px; }
     .brand { font-size: 16px; min-width: 0; }
@@ -307,7 +309,17 @@
       font-size: 11px;
       padding: 6px 10px;
     }
-    .btn-mini { font-size: 12px; padding: 8px 12px; }
+    .btn-mini { font-size: 12px; padding: 8px 12px; min-height: 38px; }
+    .recent-docs-btn,
+    #recent-docs-btn { min-height: 38px; }
+  }
+
+  @media (max-width: 380px) {
+    .brand { font-size: 14px; }
+    .brand-name { max-width: 108px; overflow: hidden; text-overflow: ellipsis; }
+    .doc-badge { max-width: 46vw; }
+    .btn-mini { padding: 8px 10px; font-size: 11px; }
+    .account-btn { padding: 8px 10px; }
   }
 
   /* ---- account button + modal ---- */
@@ -410,8 +422,9 @@
     background: var(--panel-soft);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 11px 13px;
-    font-size: 13.5px;
+    padding: 13px 13px;
+    /* 16px stops iOS Safari's auto-zoom-on-focus for form fields */
+    font-size: 16px;
     color: var(--white);
     transition: border-color 0.15s ease;
   }
@@ -460,8 +473,30 @@
     word-break: break-all;
   }
 
+  @media (max-width: 560px) {
+    .account-modal-overlay {
+      align-items: flex-end;
+      padding: 0;
+    }
+    .account-modal {
+      max-width: 100%;
+      width: 100%;
+      border-radius: 24px 24px 0 0;
+      padding: 28px 20px calc(24px + var(--safe-bottom, 0px));
+      animation: accountSheetIn 0.28s cubic-bezier(0.2, 0.9, 0.2, 1.1);
+    }
+    .account-modal-overlay.hidden .account-modal { animation: none; }
+    .account-btn-primary,
+    .account-btn-google,
+    .account-input { min-height: 46px; }
+  }
+  @keyframes accountSheetIn {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
   @media (max-width: 620px) {
-    .account-btn { font-size: 12px; padding: 8px 12px; }
+    .account-btn { font-size: 12px; padding: 8px 12px; min-height: 40px; }
   }
 
   /* ---- recent docs dropdown ---- */
@@ -573,4 +608,22 @@
     line-height: 1;
   }
   .recent-doc-remove:hover { color: var(--pink); }
+
+  @media (max-width: 560px) {
+    .recent-docs-panel {
+      position: fixed;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-height: 70vh;
+      border-radius: 20px 20px 0 0;
+      padding: 10px 10px calc(14px + var(--safe-bottom, 0px));
+      transform: translateY(0);
+    }
+    .recent-docs-panel.hidden { transform: translateY(20px); }
+    .recent-doc-open { padding: 12px 10px; }
+    .recent-doc-remove { padding: 10px 12px; }
+  }
 </style>

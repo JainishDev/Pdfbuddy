@@ -56,6 +56,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html,
@@ -68,6 +69,37 @@ body {
   font-family: 'Inter', system-ui, sans-serif;
   font-size: 16px;
   overflow-x: hidden;
+  /* Stop iOS's rubber-band bounce from dragging the whole page around
+     when a scrollable panel inside it hits its own scroll limits. */
+  overscroll-behavior-y: none;
+}
+
+body {
+  /* Removes the ~300ms tap delay on touch devices and prevents the
+     double-tap-to-zoom gesture from fighting with our own buttons. */
+  touch-action: manipulation;
+}
+
+/* iOS Safari's real viewport shrinks as the address bar/toolbar show or
+   hide, and `100vh` doesn't track that — it's sized to the *largest*
+   possible viewport, so fixed-height mobile layouts get clipped or leave
+   a dead gap at the bottom. `100dvh` tracks the actual visible viewport;
+   we keep the vh rule first as a fallback for browsers that don't
+   support dvh yet. */
+.app,
+.boot-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Safe-area insets so content clears the notch / home-indicator / rounded
+   corners on iPhones and similar devices, without affecting other browsers
+   (the env() values resolve to 0 everywhere else). */
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
 }
 
 /* ---- light theme override ----
@@ -321,7 +353,9 @@ button {
 .typing-msg span:nth-child(3) { animation-delay: 0.3s; background: var(--mint); box-shadow: var(--glow-mint); }
 
 @media (max-width: 560px) {
-  .msg { max-width: 92%; }
+  .msg { max-width: 92%; padding: 12px 15px; font-size: 14.5px; }
+  .msg-copy-btn { width: 26px; height: 26px; font-size: 12px; }
+  .msg-retry-btn { min-height: 26px; font-size: 11.5px; }
 }
 
 /* ============================================================
@@ -444,4 +478,36 @@ html[data-theme='light'] .typing-msg {
 
 @keyframes rippleAnim {
   to { transform: scale(2.6); opacity: 0; }
+}
+
+/* ============================================================
+   touch target pass — several icon-only buttons across the app
+   (message copy/retry, panel close buttons, list-item remove
+   buttons) are ~20-24px, well under the ~44px minimum recommended
+   for touch. Rather than growing them visually and breaking their
+   tight layouts, we grow their *hit area* using a transparent
+   pseudo-element, which is invisible but still receives taps.
+   Only applies on coarse-pointer (touch) devices so desktop's
+   tighter, mouse-precise layout is untouched.
+   ============================================================ */
+@media (pointer: coarse) {
+  .msg-copy-btn,
+  .account-modal-close,
+  .bit-close,
+  .recent-doc-remove,
+  .scroll-bottom-btn {
+    position: relative;
+  }
+  .msg-copy-btn::after,
+  .account-modal-close::after,
+  .bit-close::after,
+  .recent-doc-remove::after,
+  .scroll-bottom-btn::after {
+    content: '';
+    position: absolute;
+    inset: 50%;
+    width: 44px;
+    height: 44px;
+    transform: translate(-50%, -50%);
+  }
 }

@@ -38,7 +38,7 @@
     transform: scale(1.025);
     pointer-events: none;
   }
-  .boot-inner { text-align: center; }
+  .boot-inner { text-align: center; padding: 0 24px; }
 
   .boot-planet {
     width: 64px;
@@ -68,7 +68,7 @@
   }
 
   .boot-logo {
-    font-size: 30px;
+    font-size: clamp(22px, 8vw, 30px);
     line-height: 1.3;
     color: var(--white);
     animation: bootLogoIn 1s ease-out both;
@@ -81,7 +81,7 @@
   .boot-logo .l2 { color: var(--mint); margin-left: 10px; text-shadow: 0 0 18px rgba(53, 240, 192, 0.6); }
 
   .boot-bar-track {
-    width: 280px;
+    width: min(280px, 100%);
     height: 12px;
     background: var(--panel-solid);
     border: 2px solid var(--border);

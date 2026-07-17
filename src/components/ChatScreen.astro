@@ -246,7 +246,7 @@
     display: flex;
     gap: 10px;
     border-top: 1px solid var(--border);
-    padding-top: 16px;
+    padding: 16px 0 calc(4px + var(--safe-bottom, 0px));
     margin-top: 4px;
   }
   .input-count {
@@ -260,7 +260,11 @@
   .chat-input {
     flex: 1;
     font-family: 'Inter', system-ui, sans-serif;
-    font-size: 15px;
+    /* 16px is the minimum that stops iOS Safari from auto-zooming the
+       page when this field gets focus — anything smaller and the whole
+       layout jumps every time someone taps in to ask a question. */
+    font-size: 16px;
+    min-height: 46px;
     background: color-mix(in srgb, var(--panel-solid) 70%, transparent);
     border: 1px solid var(--border);
     border-radius: 999px;
@@ -276,6 +280,8 @@
   .chat-input:focus { outline: none; border-color: var(--sky); box-shadow: var(--glow-purple); }
   .btn-send {
     font-size: 14px;
+    min-height: 46px;
+    min-width: 76px;
     background: linear-gradient(135deg, var(--mint), var(--sky));
     color: var(--button-text);
     border: none;
@@ -288,7 +294,11 @@
   .btn-send:active { transform: translateY(0); }
 
   @media (max-width: 560px) {
-    .chat-screen { padding: 10px; }
+    .chat-screen {
+      padding: 10px;
+      padding-left: calc(10px + var(--safe-left, 0px));
+      padding-right: calc(10px + var(--safe-right, 0px));
+    }
     .chat-panel { padding: 14px; border-radius: 18px; }
     .chat-toolbar { grid-template-columns: 1fr; }
     .toolbar-title { font-size: 16px; }
@@ -296,12 +306,27 @@
     .doc-metrics span,
     .toolbar-btn,
     .prompt-rail button { font-size: 11px; }
-    .prompt-rail { margin-left: -2px; margin-right: -2px; }
+    .toolbar-actions { gap: 6px; }
+    .toolbar-btn { padding: 10px 12px; min-height: 38px; }
+    .prompt-rail {
+      margin-left: -2px;
+      margin-right: -2px;
+      scroll-snap-type: x proximity;
+      -webkit-overflow-scrolling: touch;
+    }
+    .prompt-rail button { scroll-snap-align: start; padding: 10px 14px; }
     .detail-console { grid-template-columns: 1fr; }
     .detail-value { white-space: normal; }
     .chat-window { gap: 10px; padding-bottom: 14px; }
-    .chat-form { flex-direction: column; }
+    .chat-form { flex-direction: column; gap: 8px; }
     .input-count { right: 16px; top: 29px; }
-    .btn-send { min-height: 44px; }
+    .chat-input { padding-right: 18px; }
+    .btn-send { width: 100%; min-height: 48px; }
+  }
+
+  @media (max-width: 380px) {
+    .toolbar-kicker { font-size: 10px; }
+    .toolbar-title { font-size: 15px; }
+    .analysis-steps { grid-template-columns: 1fr 1fr; }
   }
 </style>
